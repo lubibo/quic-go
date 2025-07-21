@@ -26,6 +26,19 @@ func TestTokenGeneratorNilTokens(t *testing.T) {
 	require.Nil(t, nilToken)
 }
 
+func TestASN1(t *testing.T) {
+	a := struct {
+		F1 string
+		F2 int64
+	}{
+		F1: "hello",
+		F2: 123,
+	}
+	data, err := asn1.Marshal(a)
+	require.NoError(t, err)
+	println(string(data))
+}
+
 func TestTokenGeneratorValidToken(t *testing.T) {
 	tokenGen := newTokenGenerator(t)
 

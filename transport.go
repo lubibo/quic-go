@@ -239,11 +239,11 @@ func (t *Transport) Dial(ctx context.Context, addr net.Addr, tlsConf *tls.Config
 
 // DialEarly dials a new connection, attempting to use 0-RTT if possible.
 func (t *Transport) DialEarly(ctx context.Context, addr net.Addr, tlsConf *tls.Config, conf *Config) (*Conn, error) {
-	return t.dial(ctx, addr, "", tlsConf, conf, true)
+	return t.dial(ctx, addr, "", tlsConf, conf, true) // 默认是会使用0RTT的
 }
 
 func (t *Transport) dial(ctx context.Context, addr net.Addr, host string, tlsConf *tls.Config, conf *Config, use0RTT bool) (*Conn, error) {
-	if err := t.init(t.isSingleUse); err != nil {
+	if err := t.init(t.isSingleUse); err != nil { // 这里面会去监听数据和启动异步发送协程
 		return nil, err
 	}
 	if err := validateConfig(conf); err != nil {
@@ -256,7 +256,7 @@ func (t *Transport) dial(ctx context.Context, addr net.Addr, host string, tlsCon
 		newSendConn(t.conn, addr, packetInfo{}, utils.DefaultLogger),
 		tlsConf,
 		conf,
-		0,
+		0, // 都是从0开始
 		false,
 		use0RTT,
 		conf.Versions[0],
@@ -273,11 +273,11 @@ func (t *Transport) doDial(
 	use0RTT bool,
 	version protocol.Version,
 ) (*Conn, error) {
-	srcConnID, err := t.connIDGenerator.GenerateConnectionID()
+	srcConnID, err := t.connIDGenerator.GenerateConnectionID() // 生成源id
 	if err != nil {
 		return nil, err
 	}
-	destConnID, err := generateConnectionIDForInitial()
+	destConnID, err := generateConnectionIDForInitial() // 目标连接id
 	if err != nil {
 		return nil, err
 	}
@@ -319,7 +319,7 @@ func (t *Transport) doDial(
 		logger,
 		version,
 	)
-	t.handlers[srcConnID] = conn
+	t.handlers[srcConnID] = conn // 存储映射关系
 	t.mutex.Unlock()
 
 	// The error channel needs to be buffered, as the run loop will continue running

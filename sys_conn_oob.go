@@ -185,7 +185,7 @@ func (c *oobConn) ReadPacket() (receivedPacket, error) {
 	data := msg.OOB[:msg.NN]
 	p := receivedPacket{
 		remoteAddr: msg.Addr,
-		rcvTime:    time.Now(),
+		rcvTime:    time.Now(), // 不是用的操作系统的时间
 		data:       msg.Buffers[0][:msg.N],
 		buffer:     buffer,
 	}

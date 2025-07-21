@@ -399,8 +399,8 @@ var newClientConnection = func(
 	s.sentPacketHandler, s.receivedPacketHandler = ackhandler.NewAckHandler(
 		initialPacketNumber,
 		protocol.ByteCount(s.config.InitialPacketSize),
-		s.rttStats,
-		false, // has no effect
+		s.rttStats, // RTT统计器
+		false,      // has no effect
 		s.conn.capabilities().ECN,
 		s.perspective,
 		s.tracer,
@@ -445,11 +445,13 @@ var newClientConnection = func(
 		tracer,
 		logger,
 		s.version,
-	)
+	) // tls客户端初始化
 	s.cryptoStreamHandler = cs
 	s.cryptoStreamManager = newCryptoStreamManager(s.initialStream, s.handshakeStream, oneRTTStream)
 	s.unpacker = newPacketUnpacker(cs, s.srcConnIDLen)
-	s.packer = newPacketPacker(srcConnID, s.connIDManager.Get, s.initialStream, s.handshakeStream, s.sentPacketHandler, s.retransmissionQueue, cs, s.framer, s.receivedPacketHandler, s.datagramQueue, s.perspective)
+	// packet打包
+	s.packer = newPacketPacker(srcConnID, s.connIDManager.Get, s.initialStream, s.handshakeStream, s.sentPacketHandler,
+		s.retransmissionQueue, cs, s.framer, s.receivedPacketHandler, s.datagramQueue, s.perspective)
 	if len(tlsConf.ServerName) > 0 {
 		s.tokenStoreKey = tlsConf.ServerName
 	} else {

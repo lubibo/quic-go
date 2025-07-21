@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotWebChatHistory">
+    <option name="currentConversation">
+      <WebConversation>
+        <option name="session">
+          <ChatSession>
+            <option name="messages">
+              <list>
+                <UIChatMessage>
+                  <option name="command" value="" />
+                  <option name="content" value="这是什么含义" />
+                  <option name="cost" value="0" />
+                  <option name="createdAt" value="1751615844672" />
+                  <option name="localReferences">
+                    <list />
+                  </option>
+                  <option name="parser">
+                    <SimpleMarkdownStreamParser>
+                      <option name="content" value="这是什么含义" />
+                      <option name="nodes">
+                        <list>
+                          <MarkdownNode>
+                            <option name="children">
+                              <list />
+                            </option>
+                            <option name="content" value="这是什么含义" />
+                            <option name="contentId" value="1010613116" />
+                            <option name="settled" value="false" />
+                            <option name="type" value="line" />
+                            <option name="xmlData">
+                              <XmlNode />
+                            </option>
+                          </MarkdownNode>
+                        </list>
+                      </option>
+                      <option name="parserState">
+                        <ParserState>
+                          <option name="column" value="5" />
+                          <option name="offset" value="6" />
+                          <option name="moveCursor" value="true" />
+                        </ParserState>
+                      </option>
+                    </SimpleMarkdownStreamParser>
+                  </option>
+                  <option name="role" value="user" />
+                  <option name="selectedRanges">
+                    <list />
+                  </option>
+                  <option name="uri" value="" />
+                  <option name="variables">
+                    <list />
+                  </option>
+                </UIChatMessage>
+              </list>
+            </option>
+            <option name="messagesV3">
+              <list />
+            </option>
+            <option name="sessionId" value="0197cf9e75d4733ebb0110bc5bf16583" />
+          </ChatSession>
+        </option>
+        <option name="conversationId" value="0197cf9e75d4733ebb0110bc5bf16583" />
+        <option name="conversation">
+          <Conversation>
+            <option name="createTime" value="1751534956792" />
+            <option name="id" value="0197cf9e75d4733ebb0110bc5bf16583" />
+            <option name="title" value="这是什么含义" />
+            <option name="updateTime" value="1751534956792" />
+          </Conversation>
+        </option>
+      </WebConversation>
+    </option>
+  </component>
+</project>

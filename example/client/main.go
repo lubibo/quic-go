@@ -5,10 +5,12 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"flag"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/quic-go/quic-go"
@@ -19,11 +21,11 @@ import (
 
 func main() {
 	quiet := flag.Bool("q", false, "don't print the data")
-	keyLogFile := flag.String("keylog", "", "key log file")
+	keyLogFile := flag.String("keylog", "/Users/boguang.lu/go_project/git.garena.com/boguang.lu/quic-go/example/client/client_ssl.log", "key log file")
 	insecure := flag.Bool("insecure", false, "skip certificate verification")
 	flag.Parse()
 	urls := flag.Args()
-
+	fmt.Printf("%+v\n", urls)
 	var keyLog io.Writer
 	if len(*keyLogFile) > 0 {
 		f, err := os.Create(*keyLogFile)
@@ -60,7 +62,8 @@ func main() {
 	for _, addr := range urls {
 		log.Printf("GET %s", addr)
 		go func(addr string) {
-			rsp, err := hclient.Get(addr)
+			req, _ := http.NewRequest("GET", addr, strings.NewReader("hello, I'm client"))
+			rsp, err := hclient.Do(req)
 			if err != nil {
 				log.Fatal(err)
 			}

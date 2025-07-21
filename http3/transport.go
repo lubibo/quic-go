@@ -208,13 +208,13 @@ func (t *Transport) doRoundTripOpt(req *http.Request, opt RoundTripOpt, isRetrie
 	hostname := authorityAddr(hostnameFromURL(req.URL))
 	trace := httptrace.ContextClientTrace(req.Context())
 	traceGetConn(trace, hostname)
-	cl, isReused, err := t.getClient(req.Context(), hostname, opt.OnlyCachedConn)
+	cl, isReused, err := t.getClient(req.Context(), hostname, opt.OnlyCachedConn) // 只是拿到Client而已，连接未必是ready的
 	if err != nil {
 		return nil, err
 	}
 
 	select {
-	case <-cl.dialing:
+	case <-cl.dialing: // 阻塞等待连接建立 为啥不等握手完成？
 	case <-req.Context().Done():
 		return nil, context.Cause(req.Context())
 	}
@@ -302,7 +302,7 @@ func (t *Transport) getClient(ctx context.Context, hostname string, onlyCached b
 			cancel:  cancel,
 		}
 		go func() {
-			defer close(cl.dialing)
+			defer close(cl.dialing) // 不管连接是否成功都会关闭channel
 			defer cancel()
 			conn, rt, err := t.dial(ctx, hostname)
 			if err != nil {
@@ -315,14 +315,14 @@ func (t *Transport) getClient(ctx context.Context, hostname string, onlyCached b
 		t.clients[hostname] = cl
 	}
 	select {
-	case <-cl.dialing:
+	case <-cl.dialing: // 尝试看下是否建立好连接
 		if cl.dialErr != nil {
-			delete(t.clients, hostname)
+			delete(t.clients, hostname) // 连接建立有问题，删除缓存
 			return nil, false, cl.dialErr
 		}
 		select {
 		case <-cl.conn.HandshakeComplete():
-			isReused = true
+			isReused = true // 尝试看下是否握手完成
 		default:
 		}
 	default:
@@ -352,12 +352,13 @@ func (t *Transport) dial(ctx context.Context, hostname string) (*quic.Conn, clie
 	dial := t.Dial
 	if dial == nil {
 		if t.transport == nil {
-			udpConn, err := net.ListenUDP("udp", nil)
+			udpConn, err := net.ListenUDP("udp", nil) // 监听udp连接
 			if err != nil {
 				return nil, nil, err
 			}
 			t.transport = &quic.Transport{Conn: udpConn}
 		}
+		// 默认的连接建立机制
 		dial = func(ctx context.Context, addr string, tlsCfg *tls.Config, cfg *quic.Config) (*quic.Conn, error) {
 			network := "udp"
 			udpAddr, err := t.resolveUDPAddr(ctx, network, addr)

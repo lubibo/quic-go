@@ -53,7 +53,7 @@ func newSendConn(c rawConn, remote net.Addr, info packetInfo, logger utils.Logge
 		}
 	}
 
-	oob := info.OOB()
+	oob := info.OOB() // Out-of-Band
 	// increase oob slice capacity, so we can add the UDP_SEGMENT and ECN control messages without allocating
 	l := len(oob)
 	oob = append(oob, make([]byte, 64)...)[:l]

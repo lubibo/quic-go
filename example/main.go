@@ -92,6 +92,7 @@ func setupHandler(www string) http.Handler {
 		if err != nil {
 			fmt.Printf("error reading body while handling /echo: %s\n", err.Error())
 		}
+		body = append([]byte("from server:"), body...)
 		w.Write(body)
 	})
 

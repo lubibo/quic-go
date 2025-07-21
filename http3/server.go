@@ -6,9 +6,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"log/slog"
 	"net"
 	"net/http"
+	"os"
 	"runtime"
 	"slices"
 	"strconv"
@@ -214,7 +216,13 @@ func (s *Server) ListenAndServeTLS(certFile, keyFile string) error {
 	}
 	// We currently only use the cert-related stuff from tls.Config,
 	// so we don't need to make a full copy.
-	ln, err := s.setupListenerForConn(&tls.Config{Certificates: certs}, nil)
+	// 打开 sslkeys.log 文件
+	keyLogFile, err := os.OpenFile("/Users/boguang.lu/go_project/git.garena.com/boguang.lu/quic-go/example/sslkey.log",
+		os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		log.Fatalf("unable to open key log file: %v", err)
+	}
+	ln, err := s.setupListenerForConn(&tls.Config{Certificates: certs, KeyLogWriter: keyLogFile}, nil)
 	if err != nil {
 		return err
 	}

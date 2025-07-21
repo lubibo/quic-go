@@ -216,6 +216,7 @@ func (h *cryptoSetup) HandleMessage(data []byte, encLevel protocol.EncryptionLev
 }
 
 func (h *cryptoSetup) handleMessage(data []byte, encLevel protocol.EncryptionLevel) error {
+	// 把加密的数据扔给TLS去解析成握手事件
 	if err := h.conn.HandleData(encLevel.ToTLSEncryptionLevel(), data); err != nil {
 		return err
 	}

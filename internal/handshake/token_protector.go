@@ -66,7 +66,9 @@ func (s *tokenProtector) createAEAD(nonce []byte) (cipher.AEAD, []byte, error) {
 	if err != nil {
 		return nil, nil, err
 	}
+
 	aead, err := cipher.NewGCM(c)
+
 	if err != nil {
 		return nil, nil, err
 	}
