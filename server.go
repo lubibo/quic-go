@@ -277,6 +277,7 @@ func newServer(
 	if acceptEarly {
 		s.zeroRTTQueues = map[protocol.ConnectionID]*zeroRTTQueue{}
 	}
+	// server端读写协程启动
 	go s.run()
 	go s.runSendQueue()
 	s.logger.Debugf("Listening for %s connections on %s", conn.LocalAddr().Network(), conn.LocalAddr().String())

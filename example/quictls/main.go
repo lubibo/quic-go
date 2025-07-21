@@ -56,9 +56,6 @@ func Client() {
 		}
 	}()
 
-	go func() {
-		cli.HandleData()
-	}()
 }
 
 func Server() {

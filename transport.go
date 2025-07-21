@@ -205,12 +205,12 @@ func (t *Transport) createServer(tlsConf *tls.Config, conf *Config, allow0RTT bo
 		return nil, errListenerAlreadySet
 	}
 	conf = populateConfig(conf)
-	if err := t.init(false); err != nil {
+	if err := t.init(false); err != nil { // Server端启动数据监听
 		return nil, err
 	}
 	maxTokenAge := t.MaxTokenAge
 	if maxTokenAge == 0 {
-		maxTokenAge = 24 * time.Hour
+		maxTokenAge = 24 * time.Hour // 默认token有效期
 	}
 	s := newServer(
 		t.conn,
@@ -535,7 +535,7 @@ var setBufferWarningOnce sync.Once
 
 func (t *Transport) listen(conn rawConn) {
 	for {
-		p, err := conn.ReadPacket()
+		p, err := conn.ReadPacket() // 监听获取底层packet维度的数据
 		//nolint:staticcheck // SA1019 ignore this!
 		// TODO: This code is used to ignore wsa errors on Windows.
 		// Since net.Error.Temporary is deprecated as of Go 1.18, we should find a better solution.
@@ -588,7 +588,7 @@ func (t *Transport) handlePacket(p receivedPacket) {
 
 	// If there's a connection associated with the connection ID, pass the packet there.
 	if handler, ok := (*packetHandlerMap)(t).Get(connID); ok {
-		handler.handlePacket(p)
+		handler.handlePacket(p) // 这里处理握手完成后的packet
 		return
 	}
 	// RFC 9000 section 10.3.1 requires that the stateless reset detection logic is run for both
@@ -621,7 +621,7 @@ func (t *Transport) handlePacket(p receivedPacket) {
 		p.buffer.MaybeRelease()
 		return
 	}
-	t.server.handlePacket(p)
+	t.server.handlePacket(p) // 把建连的packet交给上层的baseServer进行处理
 }
 
 func (t *Transport) maybeSendStatelessReset(p receivedPacket) (statelessResetQueued bool) {

@@ -296,7 +296,7 @@ func (s *Server) ServeListener(ln QUICListener) error {
 
 func (s *Server) serveListener(ln QUICListener) error {
 	for {
-		conn, err := ln.Accept(s.graceCtx)
+		conn, err := ln.Accept(s.graceCtx) // 这里应该是拿到握手完成后的connection了？
 		// server closed
 		if errors.Is(err, quic.ErrServerClosed) || s.graceCtx.Err() != nil {
 			return http.ErrServerClosed
@@ -527,7 +527,7 @@ func (s *Server) handleConn(conn *quic.Conn) error {
 			// Write is guaranteed to return once the connection is closed.
 			go func() {
 				defer wg.Done()
-				_, _ = ctrlStr.Write((&goAwayFrame{StreamID: nextStreamID}).Append(nil))
+				_, _ = ctrlStr.Write((&goAwayFrame{StreamID: nextStreamID}).Append(nil)) // TODO 告诉对方最大接受的streamID？
 			}()
 			ctx = s.closeCtx
 			continue
@@ -571,7 +571,7 @@ func (s *Server) handleRequest(conn *Conn, str datagramStream, decoder *qpack.De
 		}
 	}
 	fp := &frameParser{closeConn: conn.CloseWithError, r: str, unknownFrameHandler: ufh}
-	frame, err := fp.ParseNext()
+	frame, err := fp.ParseNext() // 解析得到一个Frame
 	if err != nil {
 		if !errors.Is(err, errHijacked) {
 			str.CancelRead(quic.StreamErrorCode(ErrCodeRequestIncomplete))
@@ -618,8 +618,8 @@ func (s *Server) handleRequest(conn *Conn, str datagramStream, decoder *qpack.De
 	if _, ok := req.Header["Content-Length"]; ok && req.ContentLength >= 0 {
 		contentLength = req.ContentLength
 	}
-	hstr := newStream(str, conn, nil, nil)
-	body := newRequestBody(hstr, contentLength, conn.Context(), conn.ReceivedSettings(), conn.Settings)
+	hstr := newStream(str, conn, nil, nil)                                                              // 构造新的response stream ？
+	body := newRequestBody(hstr, contentLength, conn.Context(), conn.ReceivedSettings(), conn.Settings) // 设置body io
 	req.Body = body
 
 	if s.Logger != nil {
